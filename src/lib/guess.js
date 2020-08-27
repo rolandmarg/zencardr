@@ -1,6 +1,8 @@
 import Deck from './deck';
 import { shuffle } from './utils';
 
+//TODO create separate classes for history, cheatsheet and so on
+
 export default class Guess {
   constructor(rowSize, duplicateCards = 2) {
     this.deck = new Deck();
