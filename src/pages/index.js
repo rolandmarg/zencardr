@@ -71,7 +71,7 @@ export default function Home() {
       </div>
       {action?.status === 'win' ? (
         <div className='flex h-screen items-center justify-center'>
-          <p className='cursor-none text-6xl font-hairline tracking-wider'>
+          <p className='select-none text-6xl font-hairline tracking-wider'>
             <span className='bg-teal-600 text-white rounded-sm px-2 py-1 border-8 border-solid border-orange-300 shadow-inner'>
               VICTORY
             </span>
