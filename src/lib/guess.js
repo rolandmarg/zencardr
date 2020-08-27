@@ -10,9 +10,11 @@ export default class Guess {
     this.cheatsheet = [];
     this.history = [];
     this.uniqueCards = [];
+
     this.duplicateCardLen = duplicateCards;
     this.totalCardLen = this.rowSize * this.columnSize;
     this.uniqueCardLen = this.totalCardLen / this.duplicateCardLen;
+    this.cardsLeftToGuess = this.uniqueCardLen;
 
     if (duplicateCards < 2) {
       throw new Error(`[Guess] duplicateCards(${rowSize} should be > 2)`);
@@ -70,17 +72,29 @@ export default class Guess {
     return this.history.filter((move) => move.status === 'pending');
   }
 
-  didSelectWrong(cardIdx) {
+  didRevealWrong(cardIdx) {
     const lastMove = this.getLastMove();
 
     return this.cards[cardIdx].name !== this.cards[lastMove.cardIdx].name;
   }
 
-  didSelectRight(cardIdx) {
-    return !this.didSelectWrong(cardIdx);
+  didRevealRight(cardIdx) {
+    return !this.didRevealWrong(cardIdx);
   }
 
-  selectCard(cardIdx) {
+  isAlreadyRevealed(cardIdx) {
+    let isRevealed = false;
+
+    this.history.forEach((move) => {
+      if (move.cardIdx === cardIdx && move.status === 'success') {
+        isRevealed = true;
+      }
+    });
+
+    return isRevealed;
+  }
+
+  revealCard(cardIdx) {
     if (cardIdx < 0 || cardIdx >= this.cards.length) {
       throw new Error(
         `[Guess] cardIdx(${cardIdx} should be between 0-${this.cards.length})`
@@ -91,21 +105,30 @@ export default class Guess {
 
     if (lastMove && lastMove.cardIdx === cardIdx) {
       throw new Error(
-        `[Guess] cardIdx(${cardIdx} should not be selected twice in a row`
+        `[Guess] cardIdx(${cardIdx} should not be revealed twice in a row`
       );
     }
-    const isFirstSelect = !lastMove || lastMove.status !== 'pending';
-    const isLastSelect =
+
+    if (this.isAlreadyRevealed(cardIdx)) {
+      throw new Error(`[Guess] cardIdx(${cardIdx} is already revealed`);
+    }
+
+    const isFirstReveal = !lastMove || lastMove.status !== 'pending';
+    const isLastReveal =
       pendingMoves && pendingMoves.length === this.duplicateCardLen - 1;
 
     let status; // pending | success | fail
 
-    if (isFirstSelect) {
+    if (isFirstReveal) {
       status = 'pending';
-    } else if (isLastSelect) {
-      const isRight = this.didSelectRight(cardIdx);
+    } else if (isLastReveal) {
+      const isRight = this.didRevealRight(cardIdx);
       if (isRight) {
-        status = 'success';
+        if (--this.cardsLeftToGuess === 0) {
+          status = 'win';
+        } else {
+          status = 'success';
+        }
       } else {
         status = 'fail';
       }
