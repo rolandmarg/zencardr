@@ -1,4 +1,4 @@
-import Deck from '../lib/cards';
+import Deck from '../lib/deck';
 import { useState, useEffect } from 'react';
 
 export default function Home() {

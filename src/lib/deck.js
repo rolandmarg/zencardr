@@ -1,3 +1,5 @@
+import { shuffle } from './utils';
+
 export default class Deck {
   static suit = ['Clubs', 'Hearts', 'Diamonds', 'Spades'];
   static rank = [
@@ -16,13 +18,6 @@ export default class Deck {
     'Ace',
   ];
 
-  static getRandomCard() {
-    const suit = Deck.suit[Math.floor(Math.random() * Deck.suit.length)];
-    const rank = Deck.rank[Math.floor(Math.random() * Deck.rank.length)];
-
-    return { rank, suit };
-  }
-
   constructor() {
     this.deck = [];
 
@@ -36,17 +31,27 @@ export default class Deck {
   }
 
   shuffle() {
-    let randomIndex;
-    let temporaryValue;
-    let currentIndex = this.deck.length;
+    shuffle(this.deck);
+  }
 
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
+  getDeck() {
+    return this.deck;
+  }
 
-      temporaryValue = this.deck[currentIndex];
-      this.deck[currentIndex] = this.deck[randomIndex];
-      this.deck[randomIndex] = temporaryValue;
+  getDeckSize() {
+    return this.deck.length;
+  }
+
+  drawRandomCard() {
+    if (this.deck.length <= 0) {
+      return null;
     }
+
+    const [random] = this.deck.splice(
+      Math.floor(Math.random() * this.deck.length),
+      1
+    );
+
+    return random;
   }
 }
