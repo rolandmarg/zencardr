@@ -143,14 +143,14 @@ export default function Home() {
           )}
 
           <div className='ml-2'>
-            <p className='text-xl font-semibold'>Select difficulty</p>
+            <p className='text-xl font-thin'>Select difficulty</p>
             <div className=''>
               <button
                 onClick={() => {
                   setDifficulty('easy');
                   window.scrollTo(0, 0);
                 }}
-                className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 m-2 rounded'
+                className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 mr-2 rounded'
               >
                 Easy
               </button>
