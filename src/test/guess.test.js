@@ -35,7 +35,7 @@ describe('testing Guess class', () => {
   it('should return pending when revealing card on first move', () => {
     const game = new Guess(2, 2);
 
-    expect(game.revealCard(3)).toBe('pending');
+    expect(game.revealCard(3).status).toBe('pending');
   });
 
   it('should return fail when revealing wrong card', () => {
@@ -43,7 +43,7 @@ describe('testing Guess class', () => {
 
     const cardIndices = game.cheatsheet[0].indices;
 
-    expect(game.revealCard(cardIndices[0])).toBe('pending');
+    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
 
     let wrongIdx = 0;
     while (cardIndices.includes(wrongIdx)) {
@@ -51,7 +51,7 @@ describe('testing Guess class', () => {
     }
     // now wrongIdx is definitely wrong
 
-    expect(game.revealCard(wrongIdx)).toBe('fail');
+    expect(game.revealCard(wrongIdx).status).toBe('fail');
   });
 
   it('should return success when revealing right card', () => {
@@ -59,8 +59,8 @@ describe('testing Guess class', () => {
 
     const cardIndices = game.cheatsheet[0].indices;
 
-    expect(game.revealCard(cardIndices[0])).toBe('pending');
-    expect(game.revealCard(cardIndices[1])).toBe('success');
+    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
+    expect(game.revealCard(cardIndices[1]).status).toBe('success');
   });
 
   it('should return win when revealing all card', () => {
@@ -69,10 +69,10 @@ describe('testing Guess class', () => {
     const cardIndices = game.cheatsheet[0].indices;
     const card2Indices = game.cheatsheet[1].indices;
 
-    expect(game.revealCard(cardIndices[0])).toBe('pending');
-    expect(game.revealCard(cardIndices[1])).toBe('success');
-    expect(game.revealCard(card2Indices[0])).toBe('pending');
-    expect(game.revealCard(card2Indices[1])).toBe('win');
+    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
+    expect(game.revealCard(cardIndices[1]).status).toBe('success');
+    expect(game.revealCard(card2Indices[0]).status).toBe('pending');
+    expect(game.revealCard(card2Indices[1]).status).toBe('win');
   });
 
   it('should throw error when revealing same card twice in a row', () => {

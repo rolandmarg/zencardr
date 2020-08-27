@@ -16,23 +16,20 @@ export default class Guess {
     this.duplicateCardLen = duplicateCards;
     this.totalCardLen = this.rowSize * this.columnSize;
     this.uniqueCardLen = this.totalCardLen / this.duplicateCardLen;
-    this.cardsLeftToGuess = this.uniqueCardLen;
+    this.cardsLeftToGuess = this.totalCardLen;
 
     if (duplicateCards < 2) {
-      throw new Error(`[Guess] duplicateCards(${rowSize} should be > 2)`);
-    }
-    if (rowSize % 2 !== 0) {
-      throw new Error(`[Guess] row size(${rowSize}) should be even`);
+      throw new Error(`duplicateCards(${rowSize} should be > 2)`);
     }
     if (this.totalCardLen > this.deck.getDeckSize()) {
       throw new Error(
-        `[Guess] row size^2(${this.rowSize}^2=${this.totalCardLen})
+        `row size^2(${this.rowSize}^2=${this.totalCardLen})
          should not be more than deck size(${this.deck.getDeckSize()})`
       );
     }
     if (this.totalCardLen % this.duplicateCardLen !== 0) {
       throw new Error(
-        `[Guess] row size^2(${this.rowSize}^2=${this.totalCardLen}) 
+        `row size^2(${this.rowSize}^2=${this.totalCardLen}) 
          should be divisible by duplicateCards(${this.duplicateCardLen})`
       );
     }
@@ -76,6 +73,9 @@ export default class Guess {
 
   didRevealWrong(cardIdx) {
     const lastMove = this.getLastMove();
+    if (!lastMove) {
+      return false;
+    }
 
     return this.cards[cardIdx].name !== this.cards[lastMove.cardIdx].name;
   }
@@ -99,47 +99,52 @@ export default class Guess {
   revealCard(cardIdx) {
     if (cardIdx < 0 || cardIdx >= this.cards.length) {
       throw new Error(
-        `[Guess] cardIdx(${cardIdx} should be between 0-${this.cards.length})`
+        `card index(${cardIdx} should be between 0-${this.cards.length})`
       );
     }
     const lastMove = this.getLastMove();
     const pendingMoves = this.getPendingMoves();
 
-    if (lastMove && lastMove.cardIdx === cardIdx) {
-      throw new Error(
-        `[Guess] cardIdx(${cardIdx} should not be revealed twice in a row`
-      );
+    if (lastMove && lastMove.status != 'fail' && lastMove.cardIdx === cardIdx) {
+      throw new Error('card should not be revealed twice');
     }
 
     if (this.isAlreadyRevealed(cardIdx)) {
-      throw new Error(`[Guess] cardIdx(${cardIdx} is already revealed`);
+      throw new Error('card is already revealed');
     }
 
-    const isFirstReveal = !lastMove || lastMove.status !== 'pending';
-    const isLastReveal =
-      pendingMoves && pendingMoves.length === this.duplicateCardLen - 1;
+    const isFirstReveal = pendingMoves.length === 0;
+    const isLastRevealStep = pendingMoves.length === this.duplicateCardLen - 1;
+    const isRight = this.didRevealRight(cardIdx);
 
     let status; // pending | success | fail
 
     if (isFirstReveal) {
       status = 'pending';
-    } else if (isLastReveal) {
-      const isRight = this.didRevealRight(cardIdx);
-      if (isRight) {
-        if (--this.cardsLeftToGuess === 0) {
+    } else if (isRight) {
+      if (isLastRevealStep) {
+        this.cardsLeftToGuess -= pendingMoves.length + 1;
+        if (this.cardsLeftToGuess === 0) {
           status = 'win';
         } else {
           status = 'success';
         }
+
+        pendingMoves.forEach((move) => (move.status = status));
       } else {
-        status = 'fail';
+        status = 'pending';
       }
+    } else {
+      status = 'fail';
 
       pendingMoves.forEach((move) => (move.status = status));
     }
 
-    this.history.push({ status, cardIdx });
+    const move = { status, cardIdx, card: this.cards[cardIdx] };
+    this.history.push(move);
 
-    return status;
+    const result = { status, affected: [...pendingMoves, move] };
+
+    return result;
   }
 }

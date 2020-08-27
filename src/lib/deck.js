@@ -1,7 +1,7 @@
 import { shuffle } from './utils';
 
 export default class Deck {
-  static suit = ['Clubs', 'Hearts', 'Diamonds', 'Spades'];
+  static suit = ['♣️', '♥️', '♦️', '♠️'];
   static rank = [
     '2',
     '3',
