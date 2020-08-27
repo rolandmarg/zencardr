@@ -79,10 +79,51 @@ export default function Home() {
         </div>
       ) : (
         <div className='p-4'>
-          <div className='ml-2 mt-4'>
-            <span className='text-4xl font-hairline'>{`Match ${
+          <div className='ml-2 mt-4 flex justify-between'>
+            <span className='mt-4 lg:ml-4 text-4xl font-hairline'>{`Match ${
               difficulty === 'medium' ? 3 : 2
             } cards`}</span>
+            <div className='ml-2 lg:mr-4'>
+              <p className='text-xl font-thin'>Select difficulty</p>
+              <div className=''>
+                <button
+                  onClick={() => {
+                    setDifficulty('easy');
+                    window.scrollTo(0, 0);
+                  }}
+                  className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 mr-2 rounded'
+                >
+                  Easy
+                </button>
+                <button
+                  onClick={() => {
+                    setDifficulty('medium');
+                    window.scrollTo(0, 0);
+                  }}
+                  className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 m-2 rounded'
+                >
+                  Medium
+                </button>
+                <button
+                  onClick={() => {
+                    setDifficulty('hard');
+                    window.scrollTo(0, 0);
+                  }}
+                  className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 m-2 rounded'
+                >
+                  Hard
+                </button>
+                <button
+                  onClick={() => {
+                    setDifficulty('insane');
+                    window.scrollTo(0, 0);
+                  }}
+                  className='bg-red-500 focus:outline-none hover:bg-red-600 text-white text-xl px-4 py-1 m-2 rounded'
+                >
+                  Insane
+                </button>
+              </div>
+            </div>
           </div>
 
           {error && (
@@ -102,7 +143,7 @@ export default function Home() {
                   : difficulty === 'insane'
                   ? 'flex flex-wrap max-w-4xl'
                   : 'flex flex-wrap max-w-sm'
-              } p-2 rounded m-4 my-16 lg:mx-auto`}
+              } p-2 rounded m-4 my-16 sm:mx-auto`}
             >
               {gameContext.cards.map((card, index) => {
                 return (
@@ -141,48 +182,6 @@ export default function Home() {
               })}
             </div>
           )}
-
-          <div className='ml-2'>
-            <p className='text-xl font-thin'>Select difficulty</p>
-            <div className=''>
-              <button
-                onClick={() => {
-                  setDifficulty('easy');
-                  window.scrollTo(0, 0);
-                }}
-                className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 mr-2 rounded'
-              >
-                Easy
-              </button>
-              <button
-                onClick={() => {
-                  setDifficulty('medium');
-                  window.scrollTo(0, 0);
-                }}
-                className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 m-2 rounded'
-              >
-                Medium
-              </button>
-              <button
-                onClick={() => {
-                  setDifficulty('hard');
-                  window.scrollTo(0, 0);
-                }}
-                className='bg-indigo-500 focus:outline-none hover:bg-indigo-600 text-white font-thin text-xl px-4 py-1 m-2 rounded'
-              >
-                Hard
-              </button>
-              <button
-                onClick={() => {
-                  setDifficulty('insane');
-                  window.scrollTo(0, 0);
-                }}
-                className='bg-red-500 focus:outline-none hover:bg-red-600 text-white text-xl px-4 py-1 m-2 rounded'
-              >
-                Insane
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </>
