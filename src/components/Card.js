@@ -3,7 +3,7 @@ export default function Card({ card, isFaceUp, onClick }) {
     <div className='m-2'>
       {isFaceUp ? (
         <div className='relative bg-black text-white h-48 w-32 rounded-md select-none flex justify-center items-center p-2'>
-          <span className='text-5xl text-center'>{card.rank}</span>
+          <span className='text-4xl text-center'>{card.rank}</span>
           <span className='absolute top-0 left-0 pl-1 text-3xl'>
             {card.suit}
           </span>
