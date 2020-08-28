@@ -21,13 +21,12 @@ const config = {
 
 export default function Home() {
   const [difficulty, setDifficulty] = useState('easy');
-  const [error, setError] = useState();
-  const [isFaceUp, setIsFaceUp] = useState();
-  const [gameContext, setGameContext] = useState();
-  const [action, setAction] = useState();
+  const [error, setError] = useState('');
+  const [isFaceUp, setIsFaceUp] = useState([]);
+  const [gameContext, setGameContext] = useState({});
+  const [gameState, setGameState] = useState({});
 
   function startNewGame() {
-    console.log(difficulty);
     let rowSize = 2;
     let duplicateCards = 2;
     if (difficulty === 'hard') {
@@ -45,7 +44,7 @@ export default function Home() {
 
     setIsFaceUp([]);
     setGameContext(guess);
-    setAction({});
+    setGameState({});
     setError('');
   }
 
@@ -55,11 +54,11 @@ export default function Home() {
 
   useEffect(() => {
     setTimeout(() => {
-      if (action?.status === 'win') {
+      if (gameState.isWin) {
         startNewGame();
       }
     }, 2000);
-  }, [action]);
+  }, [gameState]);
 
   return (
     <>
@@ -67,9 +66,9 @@ export default function Home() {
         <title>zencardr</title>
       </Head>
       <div className='flex justify-center'>
-        <Confetti active={action?.status === 'win'} config={config} />
+        <Confetti active={gameState.isWin} config={config} />
       </div>
-      {action?.status === 'win' ? (
+      {gameState.isWin ? (
         <div className='flex h-screen items-center justify-center'>
           <p className='select-none text-6xl font-hairline tracking-wider'>
             <span className='bg-teal-600 text-white rounded-sm px-2 py-1 border-8 border-solid border-orange-300 shadow-inner'>
@@ -145,7 +144,7 @@ export default function Home() {
                   : 'flex flex-wrap max-w-sm'
               } p-2 rounded m-4 my-16 sm:mx-auto`}
             >
-              {gameContext.cards.map((card, index) => {
+              {gameContext.cards?.cards.map((card, index) => {
                 return (
                   <Card
                     key={index}
@@ -157,17 +156,28 @@ export default function Home() {
                           return;
                         }
 
-                        if (action.status === 'fail') {
-                          setIsFaceUp((prev) => {
-                            action.affected.forEach(
-                              (i) => (prev[i.cardIdx] = false)
+                        if (gameState.lastMove?.isFail()) {
+                          setIsFaceUp((prevState) => {
+                            // if we failed to guess card,
+                            // face down all other pending cards
+                            gameState.affectedMoves.forEach(
+                              (i) => (prevState[i.cardIdx] = false)
                             );
 
-                            return [...prev];
+                            return [...prevState];
                           });
                         }
-                        const currentAction = gameContext.revealCard(index);
-                        setAction(currentAction);
+                        const {
+                          move,
+                          affected,
+                          isWin,
+                        } = gameContext.revealCard(index);
+
+                        setGameState({
+                          lastMove: move,
+                          affectedMoves: affected,
+                          isWin,
+                        });
                         setIsFaceUp((prevState) => {
                           prevState[index] = !prevState[index];
 

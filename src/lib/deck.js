@@ -1,5 +1,16 @@
 import { shuffle } from './utils';
 
+class Card {
+  constructor({ suit, rank }) {
+    this.suit = suit;
+    this.rank = rank;
+  }
+
+  get name() {
+    return `${this.rank} of ${this.suit}`;
+  }
+}
+
 export default class Deck {
   static suit = ['♣️', '♥️', '♦️', '♠️'];
   static rank = [
@@ -19,36 +30,28 @@ export default class Deck {
   ];
 
   constructor() {
-    this.deck = [];
+    this.fill();
+  }
+
+  fill() {
+    this.cards = [];
 
     Deck.rank.forEach((rank) => {
       Deck.suit.forEach((suit) => {
-        this.deck.push({ rank, suit, name: `${rank} of ${suit}` });
+        this.cards.push(new Card({ rank, suit }));
       });
     });
 
-    this.shuffle();
-  }
-
-  shuffle() {
-    shuffle(this.deck);
-  }
-
-  getDeck() {
-    return this.deck;
-  }
-
-  getDeckSize() {
-    return this.deck.length;
+    shuffle(this.cards);
   }
 
   drawRandomCard() {
-    if (this.deck.length <= 0) {
+    if (this.cards.length <= 0) {
       return null;
     }
 
-    const [random] = this.deck.splice(
-      Math.floor(Math.random() * this.deck.length),
+    const [random] = this.cards.splice(
+      Math.floor(Math.random() * this.cards.length),
       1
     );
 

@@ -12,7 +12,6 @@ describe('testing Guess class', () => {
     expect(() => new Guess(3, 4)).toThrow();
     expect(() => new Guess(2, 1)).toThrow();
     expect(() => new Guess(3, 2)).toThrow();
-    expect(() => new Guess(8, 2)).toThrow();
   });
 
   it('should throw when revealing wrong index', () => {
@@ -35,44 +34,56 @@ describe('testing Guess class', () => {
   it('should return pending when revealing card on first move', () => {
     const game = new Guess(2, 2);
 
-    expect(game.revealCard(3).status).toBe('pending');
+    const { move } = game.revealCard(3);
+    expect(move.isPending()).toBeTruthy();
   });
 
   it('should return fail when revealing wrong card', () => {
     const game = new Guess(2, 2);
 
-    const cardIndices = game.cheatsheet[0].indices;
+    const randomCardName = game.cards.cards[0].name;
+    const { indices } = game.cheatsheet.getCardIndices(randomCardName);
 
-    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
+    const { move } = game.revealCard(indices[0]);
+    expect(move.isPending()).toBeTruthy();
 
     let wrongIdx = 0;
-    while (cardIndices.includes(wrongIdx)) {
+    while (indices.includes(wrongIdx)) {
       wrongIdx++;
     }
     // now wrongIdx is definitely wrong
 
-    expect(game.revealCard(wrongIdx).status).toBe('fail');
+    const { move: wrongMove } = game.revealCard(wrongIdx);
+    expect(wrongMove.isFail()).toBeTruthy();
   });
 
   it('should return success when revealing right card', () => {
     const game = new Guess(2, 2);
 
-    const cardIndices = game.cheatsheet[0].indices;
+    const randomCardName = game.cards.cards[0].name;
+    const { indices } = game.cheatsheet.getCardIndices(randomCardName);
 
-    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
-    expect(game.revealCard(cardIndices[1]).status).toBe('success');
+    const { move } = game.revealCard(indices[0]);
+    expect(move.isPending()).toBeTruthy();
+
+    const { move: rightMove } = game.revealCard(indices[1]);
+    expect(rightMove.isSuccess()).toBeTruthy();
   });
 
-  it('should return win when revealing all card', () => {
+  it('should win when revealing all card', () => {
     const game = new Guess(2, 2);
 
-    const cardIndices = game.cheatsheet[0].indices;
-    const card2Indices = game.cheatsheet[1].indices;
+    const firstCardName = game.cards.unique[0].name;
+    const { indices } = game.cheatsheet.getCardIndices(firstCardName);
+    const secondCardName = game.cards.unique[1].name;
+    const { indices: indices2 } = game.cheatsheet.getCardIndices(
+      secondCardName
+    );
 
-    expect(game.revealCard(cardIndices[0]).status).toBe('pending');
-    expect(game.revealCard(cardIndices[1]).status).toBe('success');
-    expect(game.revealCard(card2Indices[0]).status).toBe('pending');
-    expect(game.revealCard(card2Indices[1]).status).toBe('win');
+    expect(game.revealCard(indices[0]).move.isPending()).toBeTruthy();
+    expect(game.revealCard(indices[1]).move.isSuccess()).toBeTruthy();
+    expect(game.revealCard(indices2[0]).move.isPending()).toBeTruthy();
+    expect(game.revealCard(indices2[1]).isWin).toBeTruthy();
   });
 
   it('should throw error when revealing same card twice in a row', () => {
@@ -85,12 +96,13 @@ describe('testing Guess class', () => {
   it('should throw error when revealing already revealed card', () => {
     const game = new Guess(2, 2);
 
-    const cardIndices = game.cheatsheet[0].indices;
+    const randomCardName = game.cards.cards[0].name;
+    const { indices } = game.cheatsheet.getCardIndices(randomCardName);
 
-    game.revealCard(cardIndices[0]);
-    game.revealCard(cardIndices[1]);
+    game.revealCard(indices[0]);
+    game.revealCard(indices[1]);
 
-    expect(() => game.revealCard(cardIndices[0])).toThrow();
-    expect(() => game.revealCard(cardIndices[1])).toThrow();
+    expect(() => game.revealCard(indices[0])).toThrow();
+    expect(() => game.revealCard(indices[1])).toThrow();
   });
 });
